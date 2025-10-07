@@ -36,12 +36,15 @@
 ### 🔗 BibTeX
 If you find our code/work useful, please consider citing our work. Thank you!
 ```
-@article{xie2025gaussmi,
-  title     = {GauSS-MI: Gaussian Splatting Shannon Mutual Information for Active 3D Reconstruction},
-  author    = {Yuhan Xie, Yixi Cai, Yinqiang Zhang, Lei Yang, and Jia Pan},
-  journal   = {arXiv preprint arXiv:2503.02881},
-  year      = {2025}
-}
+@INPROCEEDINGS{YuhanRSS25, 
+    AUTHOR    = {Yuhan Xie AND Yixi Cai AND Yinqiang Zhang AND Lei Yang AND Jia Pan}, 
+    TITLE     = {{GauSS-MI: Gaussian Splatting Shannon Mutual Information for Active 3D Reconstruction}}, 
+    BOOKTITLE = {Proceedings of Robotics: Science and Systems}, 
+    YEAR      = {2025}, 
+    ADDRESS   = {LosAngeles, CA, USA}, 
+    MONTH     = {June}, 
+    DOI       = {10.15607/RSS.2025.XXI.030} 
+} 
 ```
 
 #### Acknowledgements
