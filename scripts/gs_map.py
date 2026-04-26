@@ -14,7 +14,9 @@ from munch import munchify
 
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.system_utils import mkdir_p
-from gui import gui_utils, slam_gui
+# GUI imports will be done conditionally below
+gui_utils = None
+slam_gui = None
 from utils.save_utils import save_gaussians
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import FakeQueue
@@ -30,6 +32,15 @@ class SLAM:
         # load configuration
         self.use_gui = config["Results"]["use_gui"]
         self.save_results = dataconfig["Save"]["save_results"]
+        
+        # Import GUI modules only if needed
+        global gui_utils, slam_gui
+        if self.use_gui:
+            try:
+                from gui import gui_utils, slam_gui
+            except ImportError as e:
+                print(f"GUI import failed: {e}. Disabling GUI.")
+                self.use_gui = False
 
         # gaussian splatting parameters
         model_params = munchify(config["model_params"])
@@ -94,6 +105,7 @@ class SLAM:
         # Multiprocess START
         """
         backend_process = mp.Process(target=self.backend.run)
+        gui_process = None
         if self.use_gui:
             gui_process = mp.Process(target=slam_gui.run, args=(self.params_gui, dataconfig["Save"]["save_dir"]))
             gui_process.start()
@@ -147,10 +159,10 @@ class SLAM:
         
         rospy.on_shutdown(rospy_shutdown_callback)
         if rospy.is_shutdown():
-            if gui_process.is_alive:
+            if gui_process is not None and gui_process.is_alive():
                 gui_process.terminate()
                 gui_process.join()
-            if backend_process.is_alive:
+            if backend_process.is_alive():
                 backend_process.terminate()
                 backend_process.join()
 

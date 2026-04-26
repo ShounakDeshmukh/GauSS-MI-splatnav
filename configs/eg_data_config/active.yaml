@@ -2,10 +2,10 @@ Dataset:
   type: 'active'
 
   Calibration:
-    fx: 240.0
-    fy: 240.0
-    cx: 320.0
-    cy: 240.0
+    fx: 617.4
+    fy: 616.8
+    cx: 319.4
+    cy: 238.0
     width: 640
     height: 480
     distorted: False
@@ -35,9 +35,10 @@ ViewPlan:
   pre_max_yaw_diff: 10.0    # degrees
   pre_discount_coeff: 0.95
 
+  max_num_images: 500        # HARD CAP at 500 images
   done_alpha: 0.95
   done_prob: 0.7
-  done_threshold: 75
+  done_threshold: 90
 
 
 Save:

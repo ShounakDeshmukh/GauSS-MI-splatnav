@@ -106,6 +106,9 @@ class ActiveReconFSM:
         self.done_alpha = dataconfig["ViewPlan"]["done_alpha"]
         self.done_prob = dataconfig["ViewPlan"]["done_prob"]
         self.done_threshold = dataconfig["ViewPlan"]["done_threshold"]
+        
+        # max images (hard cap)
+        self.max_num_images = dataconfig["ViewPlan"].get("max_num_images", 500)
 
     def init_view_lib(self):
         """
@@ -257,7 +260,12 @@ class ActiveReconFSM:
         render_pkg = render(self.viewpoint_cam, self.gaussians, self.pipeline_params, self.background)
         mutual_info = render_pkg["mutual_info"]
         mutual_info = mutual_info[0, :, :].detach().cpu().numpy()
-        return int(np.sum(mutual_info)) /1000.0, render_pkg["render"]
+        mi_sum = np.sum(mutual_info)
+        # Handle NaN from degenerate Gaussian configurations
+        if np.isnan(mi_sum):
+            Log(f"Warning: NaN in mutual information at pos {pos}, using fallback value", tag="ActiveManage")
+            mi_sum = 0.0
+        return int(mi_sum) / 1000.0, render_pkg["render"]
 
 
     """
@@ -337,6 +345,11 @@ class ActiveReconFSM:
         self.frame_cnts += 1
         print()
         Log(f'No. {self.frame_cnts} Image Collected... ', tag="ActiveManage")
+        
+        # Check hard cap on images
+        if self.frame_cnts >= self.max_num_images:
+            Log(f'HARD CAP REACHED: {self.frame_cnts} images collected (max: {self.max_num_images}). Stopping.', tag="ActiveManage")
+            self.reconDone()
         return
 
     # take image and generate image-pose stack
