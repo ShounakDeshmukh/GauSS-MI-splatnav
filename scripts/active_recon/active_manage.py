@@ -217,8 +217,29 @@ class ActiveReconFSM:
             next_pos = last_pos + pos_step
             if not self.isValid(next_pos):
                 continue
+            # Add buffer zone check: avoid positions too close to workspace boundaries
+            buffer = 0.3  # 30cm safety margin from edges
+            valid = True
+            for i in range(3):
+                if next_pos[i,0] < self.work_region[0,i] + buffer or next_pos[i,0] > self.work_region[1,i] - buffer:
+                    valid = False
+                    break
+            if not valid:
+                Log(f"Skipping boundary pose {np.around(next_pos.transpose(), decimals=2)} (too close to workspace edge)", tag="ActiveManage")
+                continue
             self.next_view_lib.append([next_pos, next_yaw_rad])
-        # Log(f"Next View Library Generated. Total {len(self.next_view_lib)} viewpoints.", tag="ActiveManage")
+        
+        if len(self.next_view_lib) == 0:
+            Log(f"WARNING: No valid viewpoints in library! Relaxing boundary buffer.", tag="ActiveManage")
+            # Fallback: try with reduced buffer
+            for action in self.view_action_lib:
+                next_yaw_rad = last_yaw_rad + action[2] /180.0*np.pi
+                pos_step = np.array([[-action[0] * np.sin(next_yaw_rad)], 
+                                     [ action[0] * np.cos(next_yaw_rad)], 
+                                     [ action[1]]])
+                next_pos = last_pos + pos_step
+                if self.isValid(next_pos):
+                    self.next_view_lib.append([next_pos, next_yaw_rad])
 
     def nbv_select(self):
         if len(self.next_view_lib)<=0:
@@ -261,10 +282,10 @@ class ActiveReconFSM:
         mutual_info = render_pkg["mutual_info"]
         mutual_info = mutual_info[0, :, :].detach().cpu().numpy()
         mi_sum = np.sum(mutual_info)
-        # Handle NaN from degenerate Gaussian configurations
+        # Handle NaN from degenerate Gaussian configurations (e.g., at initialization)
         if np.isnan(mi_sum):
-            Log(f"Warning: NaN in mutual information at pos {pos}, using fallback value", tag="ActiveManage")
-            mi_sum = 0.0
+            Log(f"Warning: NaN in mutual information at pos {pos} (likely early-stage Gaussians)", tag="ActiveManage")
+            mi_sum = 0.0  # Treat as uninformative, not penalized
         return int(mi_sum) / 1000.0, render_pkg["render"]
 
 

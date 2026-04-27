@@ -2,11 +2,11 @@ Dataset:
   type: 'active'
 
   Calibration:
-    fx: 785.7
-    fy: 785.7
-    cx: 540.0
+    fx: 887.06
+    fy: 887.06
+    cx: 640.0
     cy: 360.0
-    width: 1080
+    width: 1280
     height: 720
     distorted: False
     k1: 0.0
@@ -14,7 +14,7 @@ Dataset:
     p1: 0.0
     p2: 0.0
     k3: 0.0
-    depth_scale: 1000.0
+    depth_scale: 1.0
 
 
 ViewPlan:
@@ -35,7 +35,7 @@ ViewPlan:
   pre_max_yaw_diff: 10.0    # degrees
   pre_discount_coeff: 0.95
 
-  max_num_images: 500        # HARD CAP at 500 images
+  max_num_images: 500         # Increased from 300 - more coverage = better quality
   done_alpha: 0.95
   done_prob: 0.7
   done_threshold: 90
@@ -64,7 +64,7 @@ Mapping:
 
 
 Detection: 
-  depth_min_dist: 0.5
-  depth_max_dist: 2.5
+  depth_min_dist: 0.1        # Was 0.5 - capture closer objects
+  depth_max_dist: 10.0        # Was 2.5 - capture far warehouse walls
 
   fov: 90.0     # degree
