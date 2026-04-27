@@ -2,19 +2,19 @@ Dataset:
   type: 'active'
 
   Calibration:
-    fx: 617.4
-    fy: 616.8
-    cx: 319.4
-    cy: 238.0
-    width: 640
-    height: 480
+    fx: 785.7
+    fy: 785.7
+    cx: 540.0
+    cy: 360.0
+    width: 1080
+    height: 720
     distorted: False
     k1: 0.0
     k2: 0.0
     p1: 0.0
     p2: 0.0
     k3: 0.0
-    depth_scale: 1.0
+    depth_scale: 1000.0
 
 
 ViewPlan:
@@ -64,7 +64,7 @@ Mapping:
 
 
 Detection: 
-  depth_min_dist: 0.05
-  depth_max_dist: 7.0
+  depth_min_dist: 0.5
+  depth_max_dist: 2.5
 
   fov: 90.0     # degree
